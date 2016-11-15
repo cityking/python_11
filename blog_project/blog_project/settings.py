@@ -78,8 +78,9 @@ WSGI_APPLICATION = 'blog_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'blogdb',
+	'USER': 'root',
     }
 }
 
@@ -109,6 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
+
 
 USE_I18N = True
 
@@ -151,3 +153,5 @@ LOGGING = {
 FACEBOOK = 'http://www.baidu.com'
 SITE_NAME = 'cityking的个人博客'
 
+#自定义用户model
+AUTH_USER_MODEL = 'blog_app.User'
