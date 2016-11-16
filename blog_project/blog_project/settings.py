@@ -127,6 +127,11 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
+#配置文件上传路径
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

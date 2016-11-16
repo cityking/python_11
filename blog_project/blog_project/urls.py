@@ -16,7 +16,12 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from blog_app import views
+from django.conf import settings
+from django.views import static
+from upload import upload_image
 urlpatterns = [
+    url(r'^uploads/(?P<path>.*)$', static.serve, {'document_root':settings.MEDIA_ROOT,}),
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.index),
+    url(r'^admin/upload/(?P<dir_name>[^/]+)$', upload_image,name='upload_image'),
 ]
