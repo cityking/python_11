@@ -155,8 +155,12 @@ LOGGING = {
 }
 
 #网站的基本信息配置
-FACEBOOK = 'http://www.baidu.com'
 SITE_NAME = 'cityking的个人博客'
+SITE_DESC = '一个python初学者的博客，欢迎各位指导'
+SINA_SITE = 'http://weibo.com/login.php'
+TECENT_SITE = 'http://t.qq.com/'
+RSS_SITE = 'http://www.163.com/rss/'
+MAIL_SITE = 'http://mail.163.com/'
 
 #自定义用户model
 AUTH_USER_MODEL = 'blog_app.User'
