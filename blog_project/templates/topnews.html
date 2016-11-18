@@ -13,12 +13,12 @@
   <div id="pagination">
     <ul id="pagination-flickr">
 
-	{% if article_list.has_previous %}
-    <li class="previous-off"><a href="?page={{ article_list.previous_page_number }}&&page_all={{ page_all }}">&laquo;上一页</a></li>
+	{% if page > 1 %}
+    <li class="previous-off"><a href="?page={{ page }}&&page_all={{ page_all }}&&page_type=up">&laquo;上一页</a></li>
 	{% endif %}
       <li class="active">{{ page }}/ {{ page_all }}</li>
-	{% if article_list.has_next %}
-      <li class="next"><a href="?page={{article_list.next_page_number}}&&page_all={{ page_all }}">下一页 &raquo;</a></li>
+	{% if page < page_all %}
+      <li class="next"><a href="?page={{ page }}&&page_all={{ page_all }}&&page_type=down">下一页 &raquo;</a></li>
 	{% endif %}
    </ul>
    </div>
