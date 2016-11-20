@@ -2,8 +2,13 @@
 from django.shortcuts import render
 import logging
 from django.conf import settings
-from models import Category, Article
+from models import Category, Article, Comment
 from django.core.paginator import Paginator,InvalidPage,EmptyPage,PageNotAnInteger
+
+import sys  
+reload(sys)  
+sys.setdefaultencoding('utf8')
+
 
 logger = logging.getLogger('logger_test')
 
@@ -22,6 +27,8 @@ def index(request):
 
 	#日志器的使用
 	#logger.debug('this is a debug')
+
+	comment_list = Comment.objects.all()
 
 	#文章显示
 	#article_list = Article.objects.all()
@@ -52,4 +59,21 @@ def index(request):
 #		article_list = paginator.page(page)
 #	except(InvalidPage,EmptyPage,PageNotAnInteger):
 #		article_list = paginator.page(1)
+
+
+	#文章归档
+	#以月份去重
+	#原生sql
+
+	#article_date = Article.objects.raw("select id, DATE_FORMAT(date_publish, '%%Y-%%m') as date from blog_app_article")
+	#for date in article_date:
+	#	print(date)
+
+	from django.db import connection
+	cursor = connection.cursor()
+	cursor.execute('select distinct DATE_FORMAT(date_publish, "%Y年%m月") as date from blog_app_article')	
+	date = cursor.fetchall()	
+	date_utf8 = []
+	for d in date:
+		date_utf8.append(d[0].decode('utf8'))	
 	return render(request, 'index.html', locals())
