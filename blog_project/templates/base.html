@@ -140,9 +140,9 @@ window.onload = function ()
       <h3>文章归档</h3>
       <ul>
 
-	{%for d in date_utf8%}
+	{% for date in distinct_date_list %}
         <li>
-          <p><span class="tutime font-size-18"><a href=''>{{d}}文章归档</a></span></p>
+          <p><span class="tutime font-size-18"><a href='{% url "archive" %}?date={{ date }}'>{{date}}</a></span></p>
         </li>
 	{%endfor%}
 
