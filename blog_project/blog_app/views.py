@@ -13,47 +13,57 @@ sys.setdefaultencoding('utf8')
 logger = logging.getLogger('logger_test')
 
 def global_setting(request):
-	return {'site_name':settings.SITE_NAME,
-		'site_desc':settings.SITE_DESC,
-		'sina_site':settings.SINA_SITE,
-		'tecent_site':settings.TECENT_SITE,
-		'rss_site':settings.RSS_SITE,
-		'mail_site':settings.MAIL_SITE,}
+	site_name=settings.SITE_NAME
+	site_desc=settings.SITE_DESC
+	sina_site=settings.SINA_SITE
+	tecent_site=settings.TECENT_SITE
+	rss_site=settings.RSS_SITE
+	mail_site=settings.MAIL_SITE
 
+	category_list = Category.objects.all()
+	comment_list = Comment.objects.all()
+	return locals() 
+
+def getPage(request, article_count, article_all, page_data, page, page_all, page_type):
+	page_start = (page-1)*page_data
+	if page == page_all:
+	        page_end = article_count 
+	else:
+	        page_end = page*page_data
+	
+	article_list = article_all[page_start:page_end]
+	return article_list
 # Create your views here.
 def index(request):
 	page_data = 2
-	category_list = Category.objects.all()	
+        try:
+                page = int(request.GET.get('page','1'))
+                page_all = int(request.GET.get('page_all', '1'))
+                page_type = request.GET.get('page_type')
+        except ValueError:
+                page = 1
+                page_all =1
+
+	article_count = Article.objects.count()
+        if page == 1 and page_all == 1:
+                page_all = article_count/page_data
+                if article_count%page_data > 0:
+                        page_all = page_all+1
+        if page_type=='up':
+                page = page-1
+        if page_type=='down':
+                page = page+1
+
 
 	#日志器的使用
 	#logger.debug('this is a debug')
 
-	comment_list = Comment.objects.all()
 
 	#文章显示
 	#article_list = Article.objects.all()
-	try:
-		page = int(request.GET.get('page','1'))
-		page_all = int(request.GET.get('page_all', '1'))
-		page_type = request.GET.get('page_type')
-	except ValueError:
-		page = 1
-		page_all =1
-	if page == 1 and page_all == 1:
-		page_all = Article.objects.count()/page_data
-		if Article.objects.count()%page_data > 0:
-			page_all = page_all+1
-	if page_type=='up':
-		page = page-1
-	if page_type=='down':
-		page = page+1
-	page_start = (page-1)*page_data
-	if page == page_all:
-		page_end = Article.objects.count()
-	else:
-		page_end = page*page_data
+	article_all = Article.objects.all()
+	article_list = getPage(request, article_count, article_all, page_data, page, page_all, page_type)
 
-	article_list = Article.objects.all()[page_start:page_end]	
 #	paginator = Paginator(article_list, page_data)
 #	try:
 #		article_list = paginator.page(page)
@@ -90,35 +100,30 @@ def archive(request):
 		year = request.GET.get('year')
 		month = request.GET.get('month')
 
+        try:
+                page = int(request.GET.get('page','1'))
+                page_all = int(request.GET.get('page_all', '1'))
+                page_type = request.GET.get('page_type')
+        except ValueError:
+                page = 1
+                page_all =1
+
 	page_data = 2
-	category_list = Category.objects.all()	
+	article_count = Article.objects.filter(date_publish__icontains=year+'-'+month).count()
+        if page == 1 and page_all == 1:
+                page_all = article_count/page_data
+                if article_count%page_data > 0:
+                        page_all = page_all+1
+        if page_type=='up':
+                page = page-1
+        if page_type=='down':
+                page = page+1
+
+	article_all = Article.objects.filter(date_publish__icontains=year+'-'+month)
 
 
-	comment_list = Comment.objects.all()
+	article_list = getPage(request, article_count, article_all, page_data, page, page_all, page_type)
 
-	try:
-		page = int(request.GET.get('page','1'))
-		page_all = int(request.GET.get('page_all', '1'))
-		page_type = request.GET.get('page_type')
-	except ValueError:
-		page = 1
-		page_all =1
-	if page == 1 and page_all == 1:
-		page_all = Article.objects.filter(date_publish__icontains=year+'-'+month).count()/page_data
-		print(page_all)
-		if Article.objects.filter(date_publish__icontains=year+'-'+month).count()%page_data > 0:
-			page_all = page_all+1
-	if page_type=='up':
-		page = page-1
-	if page_type=='down':
-		page = page+1
-	page_start = (page-1)*page_data
-	if page == page_all:
-		page_end = Article.objects.filter(date_publish__icontains=year+'-'+month).count()
-	else:
-		page_end = page*page_data
-
-	article_list = Article.objects.filter(date_publish__icontains=year+'-'+month)[page_start:page_end]	
 
 	distinct_date_list = Article.objects.distinct_date()
 
