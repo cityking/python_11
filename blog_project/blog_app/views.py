@@ -4,6 +4,7 @@ import logging
 from django.conf import settings
 from models import Category, Article, Comment
 from django.core.paginator import Paginator,InvalidPage,EmptyPage,PageNotAnInteger
+from django.db.models import Count
 
 import sys  
 reload(sys)  
@@ -22,6 +23,10 @@ def global_setting(request):
 
 	category_list = Category.objects.all()
 	comment_list = Comment.objects.all()
+	#评论排行
+	comment_article_list = Comment.objects.values('article').annotate(comment_count=Count('article')).order_by('-comment_count')
+	article_comment_list = [Article.objects.get(pk = comment['article']) for comment in comment_article_list]
+
 	return locals() 
 
 def getPage(request, article_count, article_all, page_data, page, page_all, page_type):
@@ -87,7 +92,7 @@ def index(request):
 
 	distinct_date_list = Article.objects.distinct_date()
 
-	#for d in date:
+		#for d in date:
 	#	date_utf8.append(d[0].decode('utf8'))	
 	return render(request, 'index.html', locals())
 
