@@ -132,29 +132,30 @@ MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 
 
-#LOGGING = {
-#    'version': 1,
-#    'disable_existing_loggers': True,
-#    'handlers': {
-#        'file': {
-#            'level': 'DEBUG',
-#            'class': 'logging.FileHandler',
-#            'filename': 'log/debug.log',
-#        },
-#	'console': {
-#            'class': 'logging.StreamHandler',
-#        },
-#    },
-#    'loggers': {
-#        'logger_test': {
-#            'handlers': ['file', 'console'],
-#            'level': 'DEBUG',
-#            'propagate': True,
-#        },
-#    },
-#}
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'log/debug.log',
+        },
+	'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'logger_test': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 #网站的基本信息配置
+SITE_URL = 'http://127.0.0.1:8000'
 SITE_NAME = 'cityking的个人博客'
 SITE_DESC = '一个python初学者的博客，欢迎各位指导'
 SINA_SITE = 'http://weibo.com/login.php'
