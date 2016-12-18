@@ -2,9 +2,11 @@
 from django.shortcuts import render
 import logging
 from django.conf import settings
+from forms import Comment_form
 from models import Category, Article, Comment
 from django.core.paginator import Paginator,InvalidPage,EmptyPage,PageNotAnInteger
 from django.db.models import Count
+
 
 import sys  
 reload(sys)  
@@ -151,7 +153,33 @@ def article(request):
 		id = request.GET.get('id')
 		article = Article.objects.get(pk=id)
 		tags = article.tag.all()
+
+		#显示评论信息
+		comments = Comment.objects.filter(article=article).order_by('id')
+		comment_list = []
+		for comment in comments:
+			for item in comment_list:
+				if not hasattr(item, 'children_comment'):
+					setattr(item, 'children_comment', [])
+				if comment.pid==item:
+					item.children_comment.append(comment)
+			if comment.pid is None:
+				comment_list.append(comment)
+
+		#添加评论表单
+		comment_form = Comment_form({article:article})
+		
 	except Exception as e:
 		logger.error(e)
 	return render(request, 'article.html', locals())
 
+#创建评论
+def comment_post(request):
+	try:
+		comment_form = Comment_form(request.POST)
+		comment_form.save()
+	
+	except Exception as e:
+		logger.error(e)
+	
+	return render(request, 'index.html', locals())
