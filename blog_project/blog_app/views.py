@@ -1,5 +1,6 @@
 # encoding: utf-8
 from django.shortcuts import render
+from django.http import HttpResponseRedirect 
 import logging
 from django.conf import settings
 from forms import Comment_form
@@ -178,8 +179,8 @@ def comment_post(request):
 	try:
 		comment_form = Comment_form(request.POST)
 		comment_form.save()
-	
+		article = comment_form.cleaned_data['article']	
+		id = article.id
 	except Exception as e:
 		logger.error(e)
-	
-	return render(request, 'index.html', locals())
+	return HttpResponseRedirect('/article?id='+str(id))	
