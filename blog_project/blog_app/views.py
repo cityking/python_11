@@ -167,7 +167,7 @@ def article(request):
 				comment_list.append(comment)
 
 		#添加评论表单
-		comment_form = Comment_form({article:article})
+		comment_form = Comment_form({'article':article})
 		
 	except Exception as e:
 		logger.error(e)
