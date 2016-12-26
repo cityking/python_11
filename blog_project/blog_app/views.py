@@ -1,10 +1,12 @@
 # encoding: utf-8
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect 
 import logging
 from django.conf import settings
-from forms import Comment_form
-from models import Category, Article, Comment
+from django.contrib.auth import login, logout, authenticate
+from forms import Comment_form, Reg_Form, Login_Form
+from django.contrib.auth.hashers import make_password
+from models import Category, Article, Comment, User
 from django.core.paginator import Paginator,InvalidPage,EmptyPage,PageNotAnInteger
 from django.db.models import Count
 
@@ -184,3 +186,36 @@ def comment_post(request):
 	except Exception as e:
 		logger.error(e)
 	return HttpResponseRedirect('/article?id='+str(id))	
+
+#注册
+def do_reg(request):
+	if request.method == "POST":
+		reg_form = Reg_Form(request.POST)
+		#在调用Form的cleaned_data方法前必须判断reg_form.is_valid()
+		if reg_form.is_valid(): 
+			user = User.objects.create(username=reg_form.cleaned_data["username"], email=reg_form.cleaned_data["email"], url=reg_form.cleaned_data["url"], password=make_password(reg_form.cleaned_data["password"]))
+		#	user = User.objects.create(username=reg_form.cleaned_data["username"],
+                #                    email=reg_form.cleaned_data["email"],
+                #                    url=reg_form.cleaned_data["url"],
+                #                    password=reg_form.cleaned_data["password"])
+		user.save()
+		return redirect('/')
+	reg_form = Reg_Form()
+	return render(request, 'reg.html', locals())
+
+def do_login(request):
+	if request.method=="POST":
+		login_form = Login_Form(request.POST)
+		if login_form.is_valid():
+			username = login_form.cleaned_data['username']
+			password = login_form.cleaned_data['password']
+			user = authenticate(username=username, password=password)
+			if user is not None:
+				user.backend = 'django.contrib.auth.backends.ModelBackend' # 指定默认的登录验证方式
+                    		login(request, user)
+				return redirect('/')
+			else:
+				return render(request, "failure.html", locals())
+			
+	login_form = Login_Form()
+	return render(request, 'login.html', locals())
