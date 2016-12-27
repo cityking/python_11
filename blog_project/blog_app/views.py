@@ -170,7 +170,7 @@ def article(request):
 				comment_list.append(comment)
 
 		#添加评论表单
-		comment_form = Comment_form({'article':article})
+		comment_form = Comment_form({'username':request.user.username, 'email':request.user.email,'url':request.user.url,'article':article} if request.user.is_authenticated() else {'article':article})
 		
 	except Exception as e:
 		logger.error(e)
@@ -189,33 +189,44 @@ def comment_post(request):
 
 #注册
 def do_reg(request):
-	if request.method == "POST":
-		reg_form = Reg_Form(request.POST)
-		#在调用Form的cleaned_data方法前必须判断reg_form.is_valid()
-		if reg_form.is_valid(): 
-			user = User.objects.create(username=reg_form.cleaned_data["username"], email=reg_form.cleaned_data["email"], url=reg_form.cleaned_data["url"], password=make_password(reg_form.cleaned_data["password"]))
-		#	user = User.objects.create(username=reg_form.cleaned_data["username"],
-                #                    email=reg_form.cleaned_data["email"],
-                #                    url=reg_form.cleaned_data["url"],
-                #                    password=reg_form.cleaned_data["password"])
-		user.save()
-		return redirect('/')
-	reg_form = Reg_Form()
+	try:
+		if request.method == "POST":
+			reg_form = Reg_Form(request.POST)
+			#在调用Form的cleaned_data方法前必须判断reg_form.is_valid()
+			if reg_form.is_valid(): 
+				user = User.objects.create(username=reg_form.cleaned_data["username"], email=reg_form.cleaned_data["email"], url=reg_form.cleaned_data["url"], password=make_password(reg_form.cleaned_data["password"]))
+				user.save()
+				user.backend = 'django.contrib.auth.backends.ModelBackend' # 指定默认的登录验证方式
+        	       		login(request, user)
+			return redirect('/')
+		reg_form = Reg_Form()
+	except Exception as e:
+		logger.error(e)
 	return render(request, 'reg.html', locals())
 
 def do_login(request):
-	if request.method=="POST":
-		login_form = Login_Form(request.POST)
-		if login_form.is_valid():
-			username = login_form.cleaned_data['username']
-			password = login_form.cleaned_data['password']
-			user = authenticate(username=username, password=password)
-			if user is not None:
-				user.backend = 'django.contrib.auth.backends.ModelBackend' # 指定默认的登录验证方式
-                    		login(request, user)
-				return redirect('/')
-			else:
-				return render(request, "failure.html", locals())
-			
-	login_form = Login_Form()
+	try:
+		if request.method=="POST":
+			login_form = Login_Form(request.POST)
+			if login_form.is_valid():
+				username = login_form.cleaned_data['username']
+				password = login_form.cleaned_data['password']
+				user = authenticate(username=username, password=password)
+				if user is not None:
+					user.backend = 'django.contrib.auth.backends.ModelBackend' # 指定默认的登录验证方式
+        	            		login(request, user)
+					return redirect('/')
+				else:
+					return render(request, "failure.html", locals())
+				
+		login_form = Login_Form()
+	except Exception as e:
+		logger.error(e)
 	return render(request, 'login.html', locals())
+
+def do_logout(request):
+	try:
+		logout(request)
+	except Exception as e:
+		logger.error(e)
+	return redirect('/')

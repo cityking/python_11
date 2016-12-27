@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^comment_post/$', views.comment_post, name='comment_post'),
     url(r'^do_reg/$', views.do_reg, name='do_reg'),
     url(r'^do_login/$', views.do_login, name='do_login'),
+    url(r'^do_logout/$', views.do_logout, name='do_logout'),
 ]
